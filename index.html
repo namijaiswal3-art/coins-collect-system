@@ -1,0 +1,680 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COINS COLLECT SYSTEM | Arcade Game</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{
+ margin:0;
+ padding:0;
+ box-sizing:border-box;
+}
+
+body{
+ background:#080d19;
+ color:white;
+ font-family:Poppins,sans-serif;
+ min-height:100vh;
+}
+
+header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:18px 7%;
+ background:#111a2b;
+ border-bottom:1px solid #293950;
+}
+
+.logo{
+ font-family:Orbitron;
+ font-size:23px;
+ font-weight:900;
+ color:#ffcc35;
+}
+
+.logo span{color:white}
+
+nav{
+ display:flex;
+ gap:25px;
+}
+
+nav a{
+ text-decoration:none;
+ color:#c4d1e0;
+ font-size:14px;
+}
+
+nav a:hover{color:#ffcc35}
+
+.hero{
+ text-align:center;
+ padding:38px 15px 10px;
+}
+
+.hero h1{
+ font-family:Orbitron;
+ font-size:clamp(30px,6vw,60px);
+ color:#ffcc35;
+ text-shadow:0 0 25px #ffcc3580;
+}
+
+.hero p{
+ color:#aebbd0;
+ margin-top:12px;
+ font-size:16px;
+}
+
+.stats{
+ display:flex;
+ justify-content:center;
+ gap:15px;
+ flex-wrap:wrap;
+ margin:25px 10px;
+}
+
+.stat{
+ background:#142238;
+ border:1px solid #30445e;
+ border-radius:13px;
+ padding:14px 25px;
+ min-width:125px;
+ text-align:center;
+}
+
+.stat small{
+ color:#9fb2c8;
+ font-size:12px;
+}
+
+.stat h2{
+ color:#ffcc35;
+ font-family:Orbitron;
+ font-size:22px;
+ margin-top:7px;
+}
+
+.game-container{
+ width:min(900px,94%);
+ margin:15px auto;
+ background:#142238;
+ border:1px solid #30445e;
+ border-radius:18px;
+ padding:15px;
+ box-shadow:0 15px 50px #0008;
+}
+
+canvas{
+ display:block;
+ width:100%;
+ border-radius:12px;
+ background:#101d31;
+ touch-action:manipulation;
+}
+
+.controls{
+ display:flex;
+ justify-content:center;
+ gap:12px;
+ flex-wrap:wrap;
+ margin-top:18px;
+}
+
+button{
+ border:0;
+ padding:13px 23px;
+ border-radius:9px;
+ font-family:Orbitron;
+ font-size:12px;
+ font-weight:700;
+ cursor:pointer;
+ transition:.2s;
+}
+
+button:hover{transform:translateY(-3px)}
+
+.play{
+ background:#ffcc35;
+ color:#171000;
+}
+
+.pause,.restart,.sound{
+ background:#30445e;
+ color:white;
+}
+
+.instructions{
+ text-align:center;
+ padding:35px 15px 50px;
+}
+
+.instructions h2{
+ color:#ffcc35;
+ font-family:Orbitron;
+ margin-bottom:15px;
+}
+
+.instructions p{
+ color:#aebbd0;
+ line-height:2;
+}
+
+.features{
+ width:min(900px,94%);
+ margin:10px auto 45px;
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+ gap:15px;
+}
+
+.feature{
+ background:#142238;
+ border:1px solid #30445e;
+ border-radius:12px;
+ text-align:center;
+ padding:20px 10px;
+}
+
+.feature h3{
+ color:#ffcc35;
+ font-size:16px;
+}
+
+.feature p{
+ color:#aebbd0;
+ font-size:12px;
+ margin-top:7px;
+}
+
+footer{
+ background:#111a2b;
+ text-align:center;
+ padding:20px;
+ color:#8497ad;
+}
+
+@media(max-width:600px){
+ header{padding:15px 4%}
+ nav{gap:12px}
+ nav a{font-size:12px}
+ .stat{min-width:105px;padding:11px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">COINS <span>COLLECT</span></div>
+ <nav>
+  <a href="#home">Home</a>
+  <a href="#game">Play</a>
+  <a href="#about">About</a>
+ </nav>
+</header>
+
+<section class="hero" id="home">
+ <h1>COINS COLLECT SYSTEM</h1>
+ <p>Collect Coins. Make Your Score. Become A Champion!</p>
+</section>
+
+<div class="stats">
+
+ <div class="stat">
+  <small>YOUR SCORE</small>
+  <h2 id="score">0</h2>
+ </div>
+
+ <div class="stat">
+  <small>COLLECTED COINS</small>
+  <h2 id="coins">0</h2>
+ </div>
+
+ <div class="stat">
+  <small>BEST SCORE</small>
+  <h2 id="best">0</h2>
+ </div>
+
+ <div class="stat">
+  <small>LEVEL</small>
+  <h2 id="level">1</h2>
+ </div>
+
+</div>
+
+<section class="game-container" id="game">
+
+ <canvas id="canvas" width="850" height="400"></canvas>
+
+ <div class="controls">
+  <button class="play" onclick="startGame()">▶ PLAY GAME</button>
+  <button class="pause" onclick="pauseGame()" id="pauseBtn">Ⅱ PAUSE</button>
+  <button class="restart" onclick="restartGame()">↻ RESTART</button>
+  <button class="sound" onclick="toggleSound()" id="soundBtn">🔊 SOUND ON</button>
+ </div>
+
+</section>
+
+<section class="instructions" id="about">
+ <h2>HOW TO PLAY</h2>
+ <p>
+  ⌨️ Use Arrow Keys or WASD to move.<br>
+  🪙 Collect all the golden coins.<br>
+  🚧 Avoid the red obstacles.<br>
+  ⭐ Every coin gives you 10 points.<br>
+  🏆 Make your highest score!
+ </p>
+</section>
+
+<section class="features">
+ <div class="feature">
+  <h3>🪙 Coin System</h3>
+  <p>Collect golden coins.</p>
+ </div>
+
+ <div class="feature">
+  <h3>🏆 High Score</h3>
+  <p>Save your best record.</p>
+ </div>
+
+ <div class="feature">
+  <h3>⚡ Levels</h3>
+  <p>Unlock new difficulty levels.</p>
+ </div>
+
+ <div class="feature">
+  <h3>🎮 Easy Controls</h3>
+  <p>Keyboard and mobile support.</p>
+ </div>
+</section>
+
+<footer>
+ COINS COLLECT SYSTEM © 2026 | ARCADE GAMING
+</footer>
+
+<script>
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+const W=850,H=400;
+
+let player={
+ x:400,
+ y:180,
+ size:30,
+ speed:4
+};
+
+let coinItems=[];
+let obstacles=[];
+
+let score=0;
+let coins=0;
+let best=Number(localStorage.getItem("coinBest"))||0;
+let level=1;
+
+let running=false;
+let paused=false;
+let gameOver=false;
+let sound=true;
+let animation=null;
+let frame=0;
+
+let keys={};
+
+document.getElementById("best").textContent=best;
+
+function random(min,max){
+ return Math.random()*(max-min)+min;
+}
+
+function distance(x1,y1,x2,y2){
+ return Math.hypot(x1-x2,y1-y2);
+}
+
+function makeCoin(){
+ let x,y;
+ do{
+  x=random(35,W-35);
+  y=random(35,H-35);
+ }while(distance(x,y,player.x,player.y)<65);
+
+ return {x,y,r:11,rotation:0};
+}
+
+function makeObstacle(){
+ let x,y;
+ do{
+  x=random(40,W-50);
+  y=random(40,H-50);
+ }while(distance(x,y,player.x,player.y)<100);
+
+ return {x,y,size:28};
+}
+
+function setup(){
+ player.x=W/2;
+ player.y=H/2;
+
+ coinItems=[];
+ obstacles=[];
+
+ for(let i=0;i<5;i++){
+  coinItems.push(makeCoin());
+ }
+
+ for(let i=0;i<3;i++){
+  obstacles.push(makeObstacle());
+ }
+}
+
+function beep(freq=500){
+ if(!sound)return;
+
+ try{
+  let audio=new (window.AudioContext||window.webkitAudioContext)();
+  let osc=audio.createOscillator();
+  let gain=audio.createGain();
+
+  osc.frequency.value=freq;
+  osc.connect(gain);
+  gain.connect(audio.destination);
+
+  gain.gain.setValueAtTime(.07,audio.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.15);
+
+  osc.start();
+  osc.stop(audio.currentTime+.15);
+  osc.onended=()=>audio.close();
+ }catch(e){}
+}
+
+function background(){
+ ctx.fillStyle="#101d31";
+ ctx.fillRect(0,0,W,H);
+
+ ctx.strokeStyle="#1b3049";
+ ctx.lineWidth=1;
+
+ for(let x=0;x<W;x+=40){
+  ctx.beginPath();
+  ctx.moveTo(x,0);
+  ctx.lineTo(x,H);
+  ctx.stroke();
+ }
+
+ for(let y=0;y<H;y+=40){
+  ctx.beginPath();
+  ctx.moveTo(0,y);
+  ctx.lineTo(W,y);
+  ctx.stroke();
+ }
+}
+
+function drawPlayer(){
+ ctx.fillStyle="#45d9ff";
+ ctx.beginPath();
+ ctx.roundRect(player.x-player.size/2,
+ player.y-player.size/2,player.size,player.size,8);
+ ctx.fill();
+
+ ctx.fillStyle="#092337";
+ ctx.fillRect(player.x-7,player.y-5,4,5);
+ ctx.fillRect(player.x+4,player.y-5,4,5);
+
+ ctx.strokeStyle="#092337";
+ ctx.lineWidth=2;
+ ctx.beginPath();
+ ctx.arc(player.x,player.y+2,6,0,Math.PI);
+ ctx.stroke();
+}
+
+function drawCoins(){
+ coinItems.forEach(c=>{
+  c.rotation+=.06;
+
+  ctx.save();
+  ctx.translate(c.x,c.y);
+  ctx.scale(Math.max(.2,Math.abs(Math.cos(c.rotation))),1);
+
+  ctx.fillStyle="#ffcc35";
+  ctx.beginPath();
+  ctx.arc(0,0,c.r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.strokeStyle="#fff2a5";
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  ctx.restore();
+ });
+}
+
+function drawObstacles(){
+ obstacles.forEach(o=>{
+  ctx.fillStyle="#ff426b";
+  ctx.beginPath();
+  ctx.roundRect(o.x-o.size/2,o.y-o.size/2,
+  o.size,o.size,6);
+  ctx.fill();
+
+  ctx.fillStyle="#ffffff";
+  ctx.fillRect(o.x-5,o.y-5,4,4);
+  ctx.fillRect(o.x+3,o.y-5,4,4);
+ });
+}
+
+function draw(){
+ background();
+ drawCoins();
+ drawObstacles();
+ drawPlayer();
+}
+
+function updateUI(){
+ document.getElementById("score").textContent=score;
+ document.getElementById("coins").textContent=coins;
+ document.getElementById("level").textContent=level;
+}
+
+function update(){
+ if(!running||paused)return;
+
+ frame++;
+
+ let movement=player.speed+(level-1)*.3;
+
+ if(keys["ArrowUp"]||keys["KeyW"])player.y-=movement;
+ if(keys["ArrowDown"]||keys["KeyS"])player.y+=movement;
+ if(keys["ArrowLeft"]||keys["KeyA"])player.x-=movement;
+ if(keys["ArrowRight"]||keys["KeyD"])player.x+=movement;
+
+ // Boundary
+ player.x=Math.max(16,Math.min(W-16,player.x));
+ player.y=Math.max(16,Math.min(H-16,player.y));
+
+ // Coin collection
+ coinItems=coinItems.filter(c=>{
+  if(distance(player.x,player.y,c.x,c.y)<player.size/2+c.r){
+   coins++;
+   score+=10;
+   beep(850);
+   return false;
+  }
+  return true;
+ });
+
+ // Add new coins
+ if(coinItems.length<5){
+  coinItems.push(makeCoin());
+ }
+
+ // Obstacle collision
+ for(let o of obstacles){
+  if(distance(player.x,player.y,o.x,o.y)<player.size/2+o.size/2-3){
+   endGame();
+   return;
+  }
+ }
+
+ // New obstacles
+ if(frame%500===0){
+  obstacles.push(makeObstacle());
+ }
+
+ // Score and level
+ if(frame%12===0)score++;
+ level=1+Math.floor(score/100);
+
+ // Gradually increase speed
+ player.speed=Math.min(4+(level-1)*.2,7);
+
+ updateUI();
+ draw();
+
+ animation=requestAnimationFrame(update);
+}
+
+function startGame(){
+ if(running||gameOver)return;
+
+ paused=false;
+ running=true;
+ update();
+}
+
+function pauseGame(){
+ if(!running)return;
+
+ paused=!paused;
+
+ if(paused){
+  cancelAnimationFrame(animation);
+
+  document.getElementById("pauseBtn").textContent="▶ RESUME";
+
+  draw();
+  ctx.fillStyle="#0009";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.textAlign="center";
+  ctx.fillStyle="#ffcc35";
+  ctx.font="bold 40px Orbitron";
+  ctx.fillText("PAUSED",W/2,H/2);
+  ctx.textAlign="left";
+ }else{
+  document.getElementById("pauseBtn").textContent="Ⅱ PAUSE";
+  update();
+ }
+}
+
+function endGame(){
+ running=false;
+ paused=false;
+ gameOver=true;
+
+ cancelAnimationFrame(animation);
+
+ if(score>best){
+  best=score;
+  localStorage.setItem("coinBest",best);
+ }
+
+ document.getElementById("best").textContent=best;
+
+ draw();
+
+ ctx.fillStyle="#000b";
+ ctx.fillRect(0,0,W,H);
+
+ ctx.textAlign="center";
+ ctx.fillStyle="#ffcc35";
+ ctx.font="bold 38px Orbitron";
+ ctx.fillText("GAME OVER",W/2,140);
+
+ ctx.fillStyle="white";
+ ctx.font="bold 21px Poppins";
+ ctx.fillText("Score: "+score,W/2,185);
+ ctx.fillText("Coins: "+coins,W/2,220);
+
+ ctx.font="15px Poppins";
+ ctx.fillText("Click RESTART to play again",W/2,265);
+ ctx.textAlign="left";
+
+ beep(180);
+}
+
+function restartGame(){
+ cancelAnimationFrame(animation);
+
+ running=false;
+ paused=false;
+ gameOver=false;
+ frame=0;
+ score=0;
+ coins=0;
+ level=1;
+ player.speed=4;
+
+ document.getElementById("pauseBtn").textContent="Ⅱ PAUSE";
+
+ setup();
+ updateUI();
+ draw();
+}
+
+function toggleSound(){
+ sound=!sound;
+
+ document.getElementById("soundBtn").textContent=
+ sound?"🔊 SOUND ON":"🔇 SOUND OFF";
+}
+
+// Keyboard controls
+document.addEventListener("keydown",e=>{
+ if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){
+  e.preventDefault();
+ }
+
+ keys[e.code]=true;
+
+ if(e.code==="Enter"&&!running&&!gameOver){
+  startGame();
+ }
+});
+
+document.addEventListener("keyup",e=>{
+ keys[e.code]=false;
+});
+
+// Mobile controls
+let touchDirection=null;
+
+function addTouchButton(id,key){
+ const btn=document.getElementById(id);
+
+ btn.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  keys[key]=true;
+ });
+
+ ["pointerup","pointerleave","pointercancel"].forEach(event=>{
+  btn.addEventListener(event,()=>{
+   keys[key]=false;
+  });
+ });
+}
+
+setup();
+updateUI();
+draw();
+
+</script>
+</body>
+</html>
